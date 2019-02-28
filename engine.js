@@ -1,5 +1,6 @@
 var Game = new function() {
   //hola
+  //Hola guille, soy Mario
   // Inicialización del juego
   // se obtiene el canvas, se cargan los recursos y se llama a callback
   this.initialize = function(canvasElementId, sprite_data, callback) {
