@@ -25,7 +25,7 @@ var Game = new function() {
 
 
   // le asignamos un nombre lógico a cada tecla que nos interesa
-  var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
+  var KEY_CODES = { 37:'left', 39:'right', 38 :'up',40:'down',32:"fire" };
 
   this.keys = {};
 
@@ -75,9 +75,6 @@ var Game = new function() {
           boards[i].draw(Game.ctx);
         }
       }
-
-      analytics.step(dt);
-      analytics.draw(Game.ctx);
     }
     requestAnimationFrame(Game.loop);
 
@@ -92,50 +89,6 @@ var Game = new function() {
   // Change an active game board
   this.setBoard = function(num,board) { boards[num] = board; };
 };
-
-
-
-
-var analytics = new function(){
-
-  var lastDate = Date.now();
-  this.getDT = function(){
-    var now = Date.now();
-    var dt = (now-lastDate)/1000;
-    lastDate = now;
-    return dt;
-  }
-
-  var time = 0;
-  var frames = 0;
-  var fps = 0;
-  this.step = function(dt){
-    time += dt;
-    ++frames;
-
-    if(time > 1.0)
-    {
-       fps = frames / time;
-       frames = 0;
-       time = 0;
-    }
-  }
-
-  this.draw =  function(ctx){
-    ctx.fillStyle = "#FFFFFF";
-    ctx.textAlign = "left";
-
-    ctx.font = "bold 16px arial";
-    ctx.fillText(Math.round(fps),0,20);
-  }
-}
-
-
-
-
-
-
-
 ///////// SPRITESHEET
 
 var SpriteSheet = new function() {
@@ -172,14 +125,14 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
   };
 
   this.draw = function(ctx) {
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = "#FA58D0";
     ctx.textAlign = "center";
-
-    ctx.font = "bold 40px bangers";
-    ctx.fillText(title,Game.width/2,Game.height/2);
-
+    ctx.fillRect(0,0,Game.width,Game.height);
+    SpriteSheet.draw(ctx,"froggerLogo",120,100,0);
+    ctx.fillStyle="#000000";
     ctx.font = "bold 20px bangers";
-    ctx.fillText(subtitle,Game.width/2,Game.height/2 + 140);
+    ctx.textAlign = "center";
+    ctx.fillText(subtitle, Game.width / 2, Game.height / 2 + 140);
   };
 };
 
@@ -189,7 +142,8 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
 ////////////////
 
 
-var GameBoard = function() {
+var GameBoard = function(ctx) {
+   SpriteSheet.draw(ctx,"escenario",0,0,0);
   var board = this;
 
   // The current list of objects

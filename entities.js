@@ -1,12 +1,13 @@
 var sprites = {
- ship: { sx: 0, sy: 0, w: 38, h: 43, frames: 3 },
- missile: { sx: 0, sy: 42, w: 7, h: 20, frames: 1 },
- enemy_purple: { sx: 37, sy: 0, w: 42, h: 43, frames: 1 },
- enemy_bee: { sx: 79, sy: 0, w: 37, h: 43, frames: 1 },
- enemy_ship: { sx: 116, sy: 0, w: 42, h: 43, frames: 1 },
- enemy_circle: { sx: 158, sy: 0, w: 32, h: 33, frames: 1 },
- explosion: { sx: 0, sy: 64, w: 64, h: 64, frames: 12 },
-
+  escenario:{sx:422,sy:0,w:550,h:625,frame:1},
+  froggerLogo:{sx:0,sy:392,w:272,h:167,frame:1},
+  ship: { sx: 0, sy: 0, w: 38, h: 43, frames: 3 },
+  missile: { sx: 0, sy: 42, w: 7, h: 20, frames: 1 },
+  enemy_purple: { sx: 37, sy: 0, w: 42, h: 43, frames: 1 },
+  enemy_bee: { sx: 79, sy: 0, w: 37, h: 43, frames: 1 },
+  enemy_ship: { sx: 116, sy: 0, w: 42, h: 43, frames: 1 },
+  enemy_circle: { sx: 158, sy: 0, w: 32, h: 33, frames: 1 },
+  explosion: { sx: 0, sy: 64, w: 64, h: 64, frames: 12 },
 };
 
 var OBJECT_PLAYER = 1,

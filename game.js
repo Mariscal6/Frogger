@@ -11,15 +11,15 @@ var startGame = function() {
 
 
 var playGame = function() {
-
+/*
   Game.setBoard(0,new Starfield(20,0.4,100,true))
   Game.setBoard(1,new Starfield(50,0.6,100))
-  Game.setBoard(2,new Starfield(100,1.0,50));
-
-  var board = new GameBoard();
-  board.add(new PlayerShip());
-  board.add(new Level(level1,winGame));
-  Game.setBoard(3,board);
+  Game.setBoard(2,new Starfield(100,1.0,50));*/
+  var board = new GameBoard(Game.ctx);
+  //board.add()
+ // board.add(new PlayerShip());
+  //board.add(new Level(level1,winGame));
+  //Game.setBoard(3,board);
 }
 
 var winGame = function() {
