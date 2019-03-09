@@ -1,6 +1,4 @@
 var Game = new function() {
-  //hola
-  //Hola guille, soy Mario
   // Inicialización del juego
   // se obtiene el canvas, se cargan los recursos y se llama a callback
   this.initialize = function(canvasElementId, sprite_data, callback) {
@@ -143,13 +141,12 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
 
 
 var GameBoard = function(ctx) {
-   SpriteSheet.draw(ctx,"escenario",0,0,0);
   var board = this;
 
   // The current list of objects
   this.objects = [];
   this.cnt = {};
-
+ 
   // Add a new object to the object list
   this.add = function(obj) { 
     obj.board=this; 
@@ -187,6 +184,9 @@ var GameBoard = function(ctx) {
      var args = Array.prototype.slice.call(arguments,1);
      for(var i=0,len=this.objects.length; i < len; i++) {
        var obj = this.objects[i];
+       if(obj.sprite=="frog"){
+         console.log(obj.vx);
+       }
        obj[funcName].apply(obj,args);
      }
   };
@@ -221,6 +221,9 @@ var GameBoard = function(ctx) {
   this.collide = function(obj,type) {
     return this.detect(function() {
       if(obj != this) {
+      /*console.log(type +" ---" + this.type);
+      console.log(obj);
+      console.log(this);*/
        var col = (!type || this.type & type) && board.overlap(obj,this);
        return col ? this : false;
       }

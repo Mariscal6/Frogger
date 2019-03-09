@@ -16,6 +16,14 @@ var playGame = function() {
   Game.setBoard(1,new Starfield(50,0.6,100))
   Game.setBoard(2,new Starfield(100,1.0,50));*/
   var board = new GameBoard(Game.ctx);
+  board.add( new fondo());
+  board.add(new Car("car",1,100,5));
+  board.add(new Car("small_truck",0,-100,3));
+  board.add(new Trunk("tronco_grande",30,2));
+  board.add(new Turtle(-30,1));
+  board.add(new Water());
+  board.add(new Frog());
+  Game.setBoard(1,board);
   //board.add()
  // board.add(new PlayerShip());
   //board.add(new Level(level1,winGame));
@@ -42,5 +50,5 @@ var loseGame = function() {
 // y este después de realizar la inicialización llamará a
 // startGame
 window.addEventListener("load", function() {
-  Game.initialize("game",sprites,startGame);
+  Game.initialize("game",sprites,playGame);
 });
