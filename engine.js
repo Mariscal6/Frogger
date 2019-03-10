@@ -67,13 +67,13 @@ var Game = new function() {
       Game.ctx.fillRect(0,0,Game.width,Game.height);
 
       // y actualizamos y dibujamos todas las entidades
-      for(var i=0,len = boards.length;i<len;i++) {
-        if(boards[i]) { 
+      for (var i = 0, len = boards.length; i < len; i++) {
+        if (boards[i] && boards[i].activate) {
           boards[i].step(dt);
           boards[i].draw(Game.ctx);
         }
       }
-    }
+      }
     requestAnimationFrame(Game.loop);
 
     //setTimeout(Game.loop,0);
@@ -85,7 +85,9 @@ var Game = new function() {
 
   
   // Change an active game board
-  this.setBoard = function(num,board) { boards[num] = board; };
+  this.setBoard = function (num, board) {
+    boards[num] = board;
+  };
 };
 ///////// SPRITESHEET
 
@@ -114,21 +116,27 @@ var SpriteSheet = new function() {
 
 //// TITLE
 
-var TitleScreen = function TitleScreen(title,subtitle,callback) {
+var TitleScreen = function TitleScreen(subtitle,callback) {
   var up = false;
-
+  this.activate=true;
   this.step = function(dt) {
     if( ! Game.keys['fire'] ) up = true;
-    if( up && Game.keys['fire'] && callback ) callback();
+    if( up && Game.keys['fire'] && callback ) {
+      callback();
+      this.activate=false;
+    }
   };
 
   this.draw = function(ctx) {
-    ctx.fillStyle = "#FA58D0";
+    var grd = ctx.createLinearGradient(0, 0, 400, 0);
+    grd.addColorStop(0, "#1D00FE");
+    grd.addColorStop(1, "#6C5AFF");
+    ctx.fillStyle = grd;
     ctx.textAlign = "center";
     ctx.fillRect(0,0,Game.width,Game.height);
     SpriteSheet.draw(ctx,"froggerLogo",120,100,0);
     ctx.fillStyle="#000000";
-    ctx.font = "bold 20px bangers";
+    ctx.font = "bold 30px arial";
     ctx.textAlign = "center";
     ctx.fillText(subtitle, Game.width / 2, Game.height / 2 + 140);
   };
@@ -142,7 +150,7 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
 
 var GameBoard = function(ctx) {
   var board = this;
-
+  this.activate=true;
   // The current list of objects
   this.objects = [];
   this.cnt = {};

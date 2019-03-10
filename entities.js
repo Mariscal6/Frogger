@@ -1,6 +1,7 @@
 var sprites = {
   escenario:{sx:422,sy:0,w:550,h:625,frame:1},
   agua:{sx:422,sy:49,w:550,h:240,frame:1},
+  meta:{sx:422,sy:49,w:550,h:48,frame:1},
   froggerLogo:{sx:0,sy:392,w:272,h:167,frame:1},
   car:{sx:0,sy:0,w:103,h:48,frame:3},
   small_truck:{sx:0,sy:60,w:138,h:44,frame:1},
@@ -136,6 +137,29 @@ Water.prototype.step = function (dt) {
   
 };
 Water.prototype.draw = function () {
+  
+}
+//////////////////////////////////////Agua
+
+var Meta = function () {
+  this.setup('meta', {
+    frame: 0
+  });
+  this.x=0;
+  this.y=0;
+};
+
+Meta.prototype = new Sprite();
+Meta.prototype.type=OBJECT_ENEMY;
+Meta.prototype.step = function (dt) {
+  var collision = this.board.collide(this, OBJECT_PLAYER);
+  if(collision){
+    winGame();
+    this.board.activate=false;
+  }
+  
+};
+Meta.prototype.draw = function () {
   
 }
 ///////////////////////////////////////// Death
