@@ -11,14 +11,7 @@ var sprites = {
   tronco_peq:{sx:269,sy:168,w:138,h:46,frame:1},
   skull:{sx:211,sy:123,w:47,h:44,frame:4},
   turtle:{sx:5,sy:289,w:49,h:45,frame:9},
-  frog:{sx:0,sy:340,w:38,h:46,frame:9},
-  ship: { sx: 0, sy: 0, w: 38, h: 43, frames: 3 },
-  missile: { sx: 0, sy: 42, w: 7, h: 20, frames: 1 },
-  enemy_purple: { sx: 37, sy: 0, w: 42, h: 43, frames: 1 },
-  enemy_bee: { sx: 79, sy: 0, w: 37, h: 43, frames: 1 },
-  enemy_ship: { sx: 116, sy: 0, w: 42, h: 43, frames: 1 },
-  enemy_circle: { sx: 158, sy: 0, w: 32, h: 33, frames: 1 },
-  explosion: { sx: 0, sy: 64, w: 64, h: 64, frames: 12 },
+  frog:{sx:0,sy:340,w:39.28,h:46,frame:9},
 };
 
 var OBJECT_PLAYER = 1,
@@ -56,52 +49,6 @@ Sprite.prototype.hit = function(damage) {
 }
 
 
-
-////////////////////////////////////////// PLAYER
-
-var PlayerShip = function() { 
-
-  this.setup('ship', { vx: 0, frame: 0, reloadTime: 0.25, maxVel: 200 });
-
-   this.x = Game.width/2 - this.w / 2;
-   this.y = Game.height - 10 - this.h;
-
-   this.reload = this.reloadTime;
-
-
-   this.step = function(dt) {
-     if(Game.keys['left']) { this.vx = -this.maxVel; }
-     else if(Game.keys['right']) { this.vx = this.maxVel; }
-     else { this.vx = 0; }
-
-     this.x += this.vx * dt;
-
-     if(this.x < 0) { this.x = 0; }
-     else if(this.x > Game.width - this.w) { 
-       this.x = Game.width - this.w 
-     }
-
-    this.reload-=dt;
-    if(Game.keys['fire'] && this.reload < 0) {
-      Game.keys['fire'] = false;
-      this.reload = this.reloadTime;
-
-      this.board.add(new PlayerMissile(this.x,this.y+this.h/2));
-      this.board.add(new PlayerMissile(this.x+this.w,this.y+this.h/2));
-    }
-
-   }
-
-}
-
-PlayerShip.prototype = new Sprite();
-PlayerShip.prototype.type = OBJECT_PLAYER;
-
-PlayerShip.prototype.hit = function(damage) {
-  if(this.board.remove(this)) {
-    loseGame();
-  }
-}
 ///////////////////////////////////////FONDO RANA
 
 var fondo = function(){
@@ -188,54 +135,73 @@ var Frog = function () {
     vx: 0
   });
   this.x = Game.width / 2 - this.w / 2;
-  this.y = Game.height - this.h/2;
-
+  this.y = Game.height - this.h / 2;
+  this.subFrame = 0;
+  this.mover = false;
 };
 Frog.prototype = new Sprite();
-Frog.prototype.type =OBJECT_PLAYER;
+Frog.prototype.type = OBJECT_PLAYER;
 
 Frog.prototype.step = function (dt) {
-  this.x+=(this.vx * dt);
-  if (Game.keys['left']) {
-    this.x -= this.w ;
-  } else if (Game.keys['right']) {
-    this.x += this.w;
-  } else if (Game.keys['up']) {
-    this.moverRanaArriba();
-  } else if (Game.keys['down']) {
-    this.moverRanaAbajo();
+  this.x += (this.vx * dt);
+  if (this.mover) {
+    this.animacion();
+  } else {
+    if (Game.keys['left']) {
+      this.x -= this.w;
+    } else if (Game.keys['right']) {
+      this.x += this.w;
+    } else if (Game.keys['up']) {
+      this.mover=true;
+    } else if (Game.keys['down']) {
+      this.moverRanaAbajo();
+    }
+    if (this.x < 0) {
+      this.x = 0;
+    } else if (this.x > Game.width - this.w) {
+      this.x = Game.width - this.w;
+    }
+    if (this.y - this.h < 0) {
+      this.y = 0;
+    } else if (this.y > Game.height - this.h) {
+      this.y = Game.height - this.h;
+    }
+    Game.keys = {};
   }
-  if (this.x < 0) {
-    this.x = 0;
-  } else if (this.x > Game.width - this.w) {
-    this.x = Game.width - this.w;
-  }
-  if (this.y - this.h < 0) {
-    this.y = 0;
-  } else if (this.y > Game.height - this.h) {
-    this.y = Game.height - this.h;
-  }
-  Game.keys = {};
-  this.vx=0;
+  this.vx = 0;
 }
-Frog.prototype.onTrunk=function(vt){
-  this.vx=vt;
+Frog.prototype.onTrunk = function (vt) {
+  this.vx = vt;
 }
 Frog.prototype.moving = function () {
-  if(this.vx!=0){
+  if (this.vx != 0) {
     return true;
   }
   return false;
 }
-Frog.prototype.moverRanaArriba=function(){
+Frog.prototype.animacion=function(){
+  if (this.frame != Math.floor(this.subFrame / 5)) {
+    this.y -= 48 / 7;
+    console.log(this.y);
+}
+this.frame = Math.floor(this.subFrame++ / 5);
+if (this.subFrame > 35) {
+  this.y = Math.floor(this.y);
+  this.frame = 0;
+  this.mover = false;
+  this.subFrame=0;
+}
+}
+Frog.prototype.moverRanaArriba = function () {
   this.y -= 48;
 }
-Frog.prototype.moverRanaAbajo=function(){
+Frog.prototype.moverRanaAbajo = function () {
   this.y += 48;
 }
-Frog.prototype.hit=function(){
-  this.board.add(new Death(this.x + this.w/2, this.y + this.h/2));
-  this.board.remove(this);
+Frog.prototype.hit = function () {
+  this.board.add(new Death(this.x + this.w / 2, this.y + this.h / 2));
+  //this.board.remove(this);
+  loseGame();
 }
 //////////////////////////////////////////Car 
 /**
@@ -248,26 +214,31 @@ Frog.prototype.hit=function(){
 var Car = function (coche, frame, vel, fila) {
   this.setup(coche, {
     frame: frame,
-    vx: vel
+    vx: vel,
   });
-  if(vel<0){
-    this.x=Game.width;
-  }
-  else{
+  this.fila=fila;
+  if (vel < 0) {
+    this.x = Game.width;
+  } else {
     this.x = 0;
   }
-  this.y = Game.height - 48 * (fila + 1);
+  this.y = Game.height - 48 * (this.fila + 1);
 };
 Car.prototype = new Sprite();
 Car.prototype.type = OBJECT_ENEMY;
 Car.prototype.step = function (dt) {
   this.x += this.vx * dt;
-  var collision = this.board.collide(this,OBJECT_PLAYER);
-  if(collision) {
-    collision.hit(this.damage);
-    //this.board.remove(this);
+  if ((this.x > Game.width + this.w) || this.x < -this.w) {
+    this.board.remove(this);
+  } else {
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if (collision) {
+      collision.hit(this.damage);
+      //this.board.remove(this);
 
+    }
   }
+
 }
 //////////////////////////////////////////Trunk
 /**
@@ -276,26 +247,30 @@ Car.prototype.step = function (dt) {
  * @param fila {que fila }
  */
 
-var Trunk = function (tronco, vel, fila) {
+var Trunk = function (tronco, f, vel, fila) {
   this.setup(tronco, {
-    frame: 0,
+    frame: f,
     vx: vel
   });
-  if(vel<0){
-    this.x=Game.width;
-  }
-  else{
+  this.fila=fila;
+  if (vel < 0) {
+    this.x = Game.width;
+  } else {
     this.x = 0;
   }
-  this.y = Game.height - 48 * (fila + 7);
+  this.y = Game.height - 48 * (this.fila + 7);
 };
 Trunk.prototype = new Sprite();
 Trunk.prototype.type = OBJECT_ENEMY;
 Trunk.prototype.step = function (dt) {
   this.x += this.vx * dt;
-  var collision = this.board.collide(this,OBJECT_PLAYER);
-  if(collision) {
-    collision.onTrunk(this.vx);
+  if ((this.x > Game.width + this.w) || this.x < -this.w) {
+    this.board.remove(this);
+  } else {
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if (collision) {
+      collision.onTrunk(this.vx);
+    }
   }
 }
 
@@ -311,203 +286,54 @@ var Turtle = function (vel, fila) {
     frame: 0,
     vx: vel
   });
-  if(vel<0){
-    this.x=Game.width;
-  }
-  else{
+  this.fila=fila;
+  if (vel < 0) {
+    this.x = Game.width;
+  } else {
     this.x = 0;
   }
-  this.y = Game.height - 48 * (fila + 7);
+  this.y = Game.height - 48 * (this.fila + 7);
 };
 Turtle.prototype = new Sprite();
 Turtle.prototype.type = OBJECT_ENEMY;
 Turtle.prototype.step = function (dt) {
   this.x += this.vx * dt;
-  var collision = this.board.collide(this,OBJECT_PLAYER);
-  if(collision) {
-    collision.onTrunk(this.vx);
+  if ((this.x > Game.width + this.w) || this.x < -this.w) {
+    this.board.remove(this);
+  } else {
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if (collision) {
+      collision.onTrunk(this.vx);
+    }
   }
 }
-
-
-///// EXPLOSION
-
-var Explosion = function(centerX,centerY) {
-  this.setup('explosion', { frame: 0 });
-  this.x = centerX - this.w/2;
-  this.y = centerY - this.h/2;
-  this.subFrame = 0;
-};
-
-Explosion.prototype = new Sprite();
-
-Explosion.prototype.step = function(dt) {
-  this.frame = Math.floor(this.subFrame++ / 3);
-  if(this.subFrame >= 36) {
-    this.board.remove(this);
-  }
-  var collision = this.board.collide(this,OBJECT_ENEMY);
-  if(collision) {
-    this.board.remove(this);
-  }
-};
-
-
-/// Player Missile
-
-
-var PlayerMissile = function(x,y) {
-  this.setup('missile',{ vy: -700, damage: 10 });
-  this.x = x - this.w/2; 
-  this.y = y - this.h; 
-};
-
-PlayerMissile.prototype = new Sprite();
-PlayerMissile.prototype.type = OBJECT_PLAYER_PROJECTILE;
-
-
-PlayerMissile.prototype.step = function(dt)  {
-  this.y += this.vy * dt;
-  if(this.y < -this.h) { this.board.remove(this); }
-
-  var collision = this.board.collide(this,OBJECT_ENEMY);
-    if(collision) {
-    collision.hit(this.damage);
-    this.board.remove(this);
-  } else if(this.y < -this.h) { 
-      this.board.remove(this); 
-  }
-
-
-};
-
-
-
-/// ENEMIES
-
-var enemies = {
-  straight: { x: 0,   y: -50, sprite: 'enemy_ship', health: 10, 
-              E: 100 },
-  ltr:      { x: 0,   y: -100, sprite: 'enemy_purple', health: 10, 
-              B: 200, C: 1, E: 200  },
-  circle:   { x: 400,   y: -50, sprite: 'enemy_circle', health: 10, 
-              A: 0,  B: -200, C: 1, E: 20, F: 200, G: 1, H: Math.PI/2 },
-  wiggle:   { x: 100, y: -50, sprite: 'enemy_bee', health: 20, 
-              B: 100, C: 4, E: 100 },
-  step:     { x: 0,   y: -50, sprite: 'enemy_circle', health: 10,
-              B: 300, C: 1.5, E: 60 }
-};
-
-
-var Enemy = function(blueprint,override) {
-  this.merge(this.baseParameters);
-  this.setup(blueprint.sprite,blueprint);
-  this.merge(override);
+var niveles = [
+  [10, 2000, 'big_truck', 3,'coche'],
+  [5, 5000, 'small_truck', 1,'coche'],
+];
+var Spawner = function () {
+  this.t = 0;
+  var tortuga=new Turtle(200,0);
+  var coche=new Car('small_truck',0,200,0);
+  var tronco=new Trunk('tronco_grande',0,200,3);
+  this.objects={'tortuga': tortuga,'coche':coche,'tronco':tronco};
 }
-
-Enemy.prototype = new Sprite();
-Enemy.prototype.baseParameters = { A: 0, B: 0, C: 0, D: 0, 
-                                   E: 0, F: 0, G: 0, H: 0,
-                                   t: 0, health: 20, damage: 10 };
-
-
-Enemy.prototype.type = OBJECT_ENEMY;
-
-Enemy.prototype.step = function(dt) {
+Spawner.prototype = new Sprite();
+Spawner.prototype.step = function (dt) {
   this.t += dt;
-  this.vx = this.A + this.B * Math.sin(this.C * this.t + this.D);
-  this.vy = this.E + this.F * Math.sin(this.G * this.t + this.H);
-  this.x += this.vx * dt;
-  this.y += this.vy * dt;
-  if(this.y > Game.height ||
-     this.x < -this.w ||
-     this.x > Game.width) {
-       this.board.remove(this);
-  }
-
-  var collision = this.board.collide(this,OBJECT_PLAYER);
-  if(collision) {
-    collision.hit(this.damage);
-    this.board.remove(this);
-  }
-
-}
-
-Enemy.prototype.hit = function(damage) {
-  this.health -= damage;
-  if(this.health <=0) {
-    if(this.board.remove(this)) {
-      this.board.add(new Explosion(this.x + this.w/2, 
-                                   this.y + this.h/2));
+  // por cada fila
+  for (f in niveles) {
+    var nivel=niveles[f];
+    if (this.t > nivel[0]) {
+      niveles[f][0] += nivel[1];
+      var aux=Object.create(this.objects[nivel[4]]);
+      aux.sprite=f[2];
+      aux.fila=f[3];
+      this.board.addFront(aux);
     }
   }
 
 }
-
-
-
-
-
-/// STAR FIELD
-
-var Starfield = function(speed,opacity,numStars,clear) {
-
-  // Set up the offscreen canvas
-  var stars = document.createElement("canvas");
-  stars.width = Game.width; 
-  stars.height = Game.height;
-  var starCtx = stars.getContext("2d");
-
-  var offset = 0;
-
-  // If the clear option is set, 
-  // make the background black instead of transparent
-  if(clear) {
-    starCtx.fillStyle = "#000";
-    starCtx.fillRect(0,0,stars.width,stars.height);
-  }
-
-  // Now draw a bunch of random 2 pixel
-  // rectangles onto the offscreen canvas
-  starCtx.fillStyle = "#FFF";
-  starCtx.globalAlpha = opacity;
-  for(var i=0;i<numStars;i++) {
-    starCtx.fillRect(Math.floor(Math.random()*stars.width),
-                     Math.floor(Math.random()*stars.height),
-                     2,
-                     2);
-  }
-
-  // This method is called every frame
-  // to draw the starfield onto the canvas
-  this.draw = function(ctx) {
-    var intOffset = Math.floor(offset);
-    var remaining = stars.height - intOffset;
-
-    // Draw the top half of the starfield
-    if(intOffset > 0) {
-      ctx.drawImage(stars,
-                0, remaining,
-                stars.width, intOffset,
-                0, 0,
-                stars.width, intOffset);
-    }
-
-    // Draw the bottom half of the starfield
-    if(remaining > 0) {
-      ctx.drawImage(stars,
-              0, 0,
-              stars.width, remaining,
-              0, intOffset,
-              stars.width, remaining);
-    }
-  }
-
-  // This method is called to update
-  // the starfield
-  this.step = function(dt) {
-    offset += dt * speed;
-    offset = offset % stars.height;
-  }
+Spawner.prototype.draw = function () {
+  
 }
-

@@ -162,7 +162,13 @@ var GameBoard = function(ctx) {
     this.cnt[obj.type] = (this.cnt[obj.type] || 0) + 1;
     return obj; 
   };
-
+  //Add new object in the front of the list
+  this.addFront=function(obj) { 
+    obj.board=this; 
+    this.objects.unshift(obj);
+    this.cnt[obj.type] = (this.cnt[obj.type] || 0) + 1;
+    return obj; 
+  };
   // Reset the list of removed objects
   this.resetRemoved = function() { this.removed = []; };
 
@@ -192,9 +198,6 @@ var GameBoard = function(ctx) {
      var args = Array.prototype.slice.call(arguments,1);
      for(var i=0,len=this.objects.length; i < len; i++) {
        var obj = this.objects[i];
-       if(obj.sprite=="frog"){
-         console.log(obj.vx);
-       }
        obj[funcName].apply(obj,args);
      }
   };

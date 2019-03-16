@@ -7,17 +7,22 @@ var startGame = function() {
 var playGame = function() {
   var board = new GameBoard(Game.ctx);
   board.add( new fondo());
+  board.add(new Frog());
+  board.add(new Spawner());
+  Game.setBoard(3,board);
+  /*
   board.add(new Car("car",1,100,5));
   board.add(new Car("small_truck",0,-100,3));
-  board.add(new Trunk("tronco_grande",30,2));
-  board.add(new Turtle(-30,1));
-  board.add(new Trunk("tronco_grande",30,3));
-  board.add(new Trunk("tronco_grande",30,4));
-  board.add(new Trunk("tronco_grande",30,5));
+  board.add(new Trunk("tronco_grande",0,30,2));
+  board.add(new Turtle(30,1));
+  board.add(new Trunk("tronco_grande",0,30,3));
+  board.add(new Trunk("tronco_grande",0,30,4));
+  board.add(new Trunk("tronco_grande",0,30,5));
   board.add(new Meta());
   board.add(new Water());
-  board.add(new Frog());
-  Game.setBoard(3,board);
+  
+  Game.setBoard(3,board);*/
+
   //board.add()
  // board.add(new PlayerShip());
   //board.add(new Level(level1,winGame));
@@ -26,14 +31,14 @@ var playGame = function() {
 
 var winGame = function() {
   Game.setBoard(1,new TitleScreen("You win!", 
-                                  playGame));
+                          playGame));
 };
 
 
 
-var loseGame = function() {
-  Game.setBoard(3,new TitleScreen("You lose!", 
-                                  function(){}));
+var loseGame = function () {
+  Game.setBoard(3, new TitleScreen("You lose!",
+    playGame));
 };
 
 
