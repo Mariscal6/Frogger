@@ -7,8 +7,11 @@ var startGame = function() {
 var playGame = function() {
   var board = new GameBoard(Game.ctx);
   board.add( new fondo());
+  //board.add(new Car("small_truck",0,-10,3))
   board.add(new Frog());
   board.add(new Spawner());
+  board.add(new Meta());
+  board.add(new Water());
   Game.setBoard(3,board);
   /*
   board.add(new Car("car",1,100,5));

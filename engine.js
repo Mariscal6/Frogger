@@ -162,13 +162,6 @@ var GameBoard = function(ctx) {
     this.cnt[obj.type] = (this.cnt[obj.type] || 0) + 1;
     return obj; 
   };
-  //Add new object in the front of the list
-  this.addFront=function(obj) { 
-    obj.board=this; 
-    this.objects.unshift(obj);
-    this.cnt[obj.type] = (this.cnt[obj.type] || 0) + 1;
-    return obj; 
-  };
   // Reset the list of removed objects
   this.resetRemoved = function() { this.removed = []; };
 
@@ -193,11 +186,24 @@ var GameBoard = function(ctx) {
       }
     }
   };
+  this.compare = function (a,b) {
+    if (a.zIndex < b.zIndex)
+      return -1;
+    if (a.zIndex > b.zIndex)
+      return 1;
+    return 0;
+  }
+  // Sort the list
+  this.sort = function () {
+    this.objects.sort(this.compare);
+    console.log(this.objects);
+  }
   // Call the same method on all current objects 
   this.iterate = function(funcName) {
      var args = Array.prototype.slice.call(arguments,1);
      for(var i=0,len=this.objects.length; i < len; i++) {
        var obj = this.objects[i];
+       //console.log(obj.sprite+"----"+obj.zIndex);
        obj[funcName].apply(obj,args);
      }
   };
@@ -214,6 +220,7 @@ var GameBoard = function(ctx) {
   // Call step on all objects and them delete
   // any object that have been marked for removal
   this.step = function(dt) { 
+    this.sort();
     this.resetRemoved();
     this.iterate('step',dt);
     this.finalizeRemoved();

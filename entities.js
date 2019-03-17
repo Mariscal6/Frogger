@@ -3,15 +3,15 @@ var sprites = {
   agua:{sx:422,sy:49,w:550,h:240,frame:1},
   meta:{sx:422,sy:49,w:550,h:48,frame:1},
   froggerLogo:{sx:0,sy:392,w:272,h:167,frame:1},
-  car:{sx:0,sy:0,w:103,h:48,frame:3},
+  car:{sx:4,sy:5,w:97,h:46,frame:3},
   small_truck:{sx:0,sy:60,w:138,h:44,frame:1},
-  big_truck:{sx:145,sy:57,w:208,h:46,frame:1},
+  big_truck:{sx:145,sy:57,w:179,h:46,frame:1},
   tronco_med:{sx:4,sy:120,w:199,h:46,frame:1},
   tronco_grande:{sx:9,sy:172,w:247,h:46,frame:1},
   tronco_peq:{sx:269,sy:168,w:138,h:46,frame:1},
   skull:{sx:211,sy:123,w:47,h:44,frame:4},
   turtle:{sx:5,sy:289,w:49,h:45,frame:9},
-  frog:{sx:0,sy:340,w:39.28,h:46,frame:9},
+  frog:{sx:0,sy:341,w:38.85,h:46,frame:9},
 };
 
 var OBJECT_PLAYER = 1,
@@ -47,15 +47,20 @@ Sprite.prototype.draw = function(ctx) {
 Sprite.prototype.hit = function(damage) {
   this.board.remove(this);
 }
+Sprite.prototype.setFila=function(fila){
+  this.y = Game.height - 48 * (fila + 1);
+}
 
 
-///////////////////////////////////////FONDO RANA
+////////////////////////////////FONDO/////////////////////
 
 var fondo = function(){
 this.setup('escenario', { frame: 0 });
 this.x = 0;
 this.y = 0;
+this.zIndex=0;
 };
+
 
 fondo.prototype = new Sprite();
 
@@ -69,8 +74,8 @@ var Water = function () {
   });
   this.x = 0;
   this.y = 49;
+  this.zIndex=11;
 };
-
 Water.prototype = new Sprite();
 Water.prototype.type=OBJECT_ENEMY;
 Water.prototype.step = function (dt) {
@@ -86,7 +91,7 @@ Water.prototype.step = function (dt) {
 Water.prototype.draw = function () {
   
 }
-//////////////////////////////////////Agua
+//////////////////////////////////////META
 
 var Meta = function () {
   this.setup('meta', {
@@ -94,6 +99,7 @@ var Meta = function () {
   });
   this.x=0;
   this.y=0;
+  this.zIndex=10;
 };
 
 Meta.prototype = new Sprite();
@@ -109,15 +115,15 @@ Meta.prototype.step = function (dt) {
 Meta.prototype.draw = function () {
   
 }
-///////////////////////////////////////// Death
+/////////////////////////////////////////Calavera
 
 var Death = function(centerX,centerY) {
   this.setup('skull', { frame: 0 });
   this.x = centerX - this.w/2;
   this.y = centerY - this.h/2;
   this.subFrame = 0;
+  this.zIndex=8;
 };
-
 Death.prototype = new Sprite();
 
 Death.prototype.step = function(dt) {
@@ -134,6 +140,7 @@ var Frog = function () {
     frame: 0,
     vx: 0
   });
+  this.zIndex=15;
   this.x = Game.width / 2 - this.w / 2;
   this.y = Game.height - this.h / 2;
   this.subFrame = 0;
@@ -182,7 +189,7 @@ Frog.prototype.moving = function () {
 Frog.prototype.animacion=function(){
   if (this.frame != Math.floor(this.subFrame / 5)) {
     this.y -= 48 / 7;
-    console.log(this.y);
+
 }
 this.frame = Math.floor(this.subFrame++ / 5);
 if (this.subFrame > 35) {
@@ -200,8 +207,8 @@ Frog.prototype.moverRanaAbajo = function () {
 }
 Frog.prototype.hit = function () {
   this.board.add(new Death(this.x + this.w / 2, this.y + this.h / 2));
-  //this.board.remove(this);
-  loseGame();
+  this.board.remove(this);
+  //loseGame();
 }
 //////////////////////////////////////////Car 
 /**
@@ -216,11 +223,12 @@ var Car = function (coche, frame, vel, fila) {
     frame: frame,
     vx: vel,
   });
+  this.zIndex=3;
   this.fila=fila;
   if (vel < 0) {
-    this.x = Game.width;
+    this.x = Game.width+this.w;
   } else {
-    this.x = 0;
+    this.x = -this.w;
   }
   this.y = Game.height - 48 * (this.fila + 1);
 };
@@ -252,11 +260,12 @@ var Trunk = function (tronco, f, vel, fila) {
     frame: f,
     vx: vel
   });
+  this.zIndex=4;
   this.fila=fila;
   if (vel < 0) {
-    this.x = Game.width;
+    this.x = Game.width+this.w;
   } else {
-    this.x = 0;
+    this.x = -this.w;
   }
   this.y = Game.height - 48 * (this.fila + 7);
 };
@@ -286,11 +295,12 @@ var Turtle = function (vel, fila) {
     frame: 0,
     vx: vel
   });
+  this.zIndex=5;
   this.fila=fila;
   if (vel < 0) {
-    this.x = Game.width;
+    this.x = Game.width+this.w;
   } else {
-    this.x = 0;
+    this.x = -this.w;
   }
   this.y = Game.height - 48 * (this.fila + 7);
 };
@@ -307,29 +317,44 @@ Turtle.prototype.step = function (dt) {
     }
   }
 }
-var niveles = [
-  [10, 2000, 'big_truck', 3,'coche'],
-  [5, 5000, 'small_truck', 1,'coche'],
-];
+
 var Spawner = function () {
+  //[tiempo de salida||tiempo de rep||sprite||fila||tipo||vel||frame)
+  this.niveles=[
+    //[1, 6, 'car', 1, 'coche', 50, 1],
+    [1, 6, 'small_truck', 2, 'coche', 70, 0],
+    [1, 10, 'car', 3, 'coche', 50, 2],
+    [4, 8, 'big_truck', 4, 'coche', -60, 0],
+    [7, 3, 'turtle', 1, 'tortuga', 50, 0],
+    [1, 5, 'turtle', 4, 'tortuga', 50, 0],
+    [3, 10, 'tronco_grande', 2, 'tronco', 50, 0],
+    [1, 3, 'tronco_peq', 3, 'tronco', 100, 0],
+    [0, 4, 'tronco_peq', 5, 'tronco', 100, 0],
+  ];
   this.t = 0;
-  var tortuga=new Turtle(200,0);
-  var coche=new Car('small_truck',0,200,0);
-  var tronco=new Trunk('tronco_grande',0,200,3);
-  this.objects={'tortuga': tortuga,'coche':coche,'tronco':tronco};
+  this.zIndex=6;
+  this.objects = {
+    'tortuga': function (nivel) {
+      return new Turtle(nivel[5],nivel[3])
+    },
+    'coche': function (nivel) {
+      return new Car(nivel[2], nivel[6], nivel[5], nivel[3])
+    },
+    'tronco': function (nivel) {
+      return new Trunk(nivel[2], nivel[6], nivel[5], nivel[3])
+    }
+  };
 }
 Spawner.prototype = new Sprite();
 Spawner.prototype.step = function (dt) {
   this.t += dt;
   // por cada fila
-  for (f in niveles) {
-    var nivel=niveles[f];
+  for (f in this.niveles) {
+    var nivel=this.niveles[f];
     if (this.t > nivel[0]) {
-      niveles[f][0] += nivel[1];
-      var aux=Object.create(this.objects[nivel[4]]);
-      aux.sprite=f[2];
-      aux.fila=f[3];
-      this.board.addFront(aux);
+      nivel[0] += nivel[1];
+      var aux=Object.create(this.objects[nivel[4]](nivel));
+      this.board.add(aux);
     }
   }
 
