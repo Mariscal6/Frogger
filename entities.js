@@ -10,8 +10,9 @@ var sprites = {
   tronco_grande:{sx:9,sy:172,w:247,h:46,frame:1},
   tronco_peq:{sx:269,sy:168,w:138,h:46,frame:1},
   skull:{sx:211,sy:123,w:47,h:44,frame:4},
-  turtle:{sx:5,sy:289,w:49,h:45,frame:9},
+  turtle:{sx:0,sy:289,w:49,h:48,frame:8},
   frog:{sx:0,sy:341,w:38.85,h:46,frame:9},
+  corazon:{sx:0,sy:571,w:43.6,h:42,frame:3}
 };
 
 var OBJECT_PLAYER = 1,
@@ -66,6 +67,7 @@ fondo.prototype = new Sprite();
 
 fondo.prototype.step = function(dt) {
 };
+
 ///////////////////////////////////////Agua
 
 var Water = function () {
@@ -150,7 +152,7 @@ Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
 
 Frog.prototype.step = function (dt) {
-  this.x += (this.vx * dt);
+  this.x += (this.vx * dt); 
   if (this.mover) {
     this.animacion();
   } else {
@@ -176,6 +178,7 @@ Frog.prototype.step = function (dt) {
     Game.keys = {};
   }
   this.vx = 0;
+  this.compruebaTiempo();
 }
 Frog.prototype.onTrunk = function (vt) {
   this.vx = vt;
@@ -186,18 +189,17 @@ Frog.prototype.moving = function () {
   }
   return false;
 }
-Frog.prototype.animacion=function(){
-  if (this.frame != Math.floor(this.subFrame / 5)) {
-    this.y -= 48 / 7;
-
-}
-this.frame = Math.floor(this.subFrame++ / 5);
-if (this.subFrame > 35) {
-  this.y = Math.floor(this.y);
-  this.frame = 0;
-  this.mover = false;
-  this.subFrame=0;
-}
+Frog.prototype.animacion = function () {
+    if (this.frame != Math.floor(this.subFrame / 5)) {
+      this.y -= 48 / 7;
+    }
+    this.frame = Math.floor(this.subFrame++/ 5);
+    if (this.subFrame > 35) {
+      this.y = Math.floor(this.y);
+      this.frame = 0;
+      this.mover = false;
+      this.subFrame = 0;
+    }
 }
 Frog.prototype.moverRanaArriba = function () {
   this.y -= 48;
@@ -207,8 +209,23 @@ Frog.prototype.moverRanaAbajo = function () {
 }
 Frog.prototype.hit = function () {
   this.board.add(new Death(this.x + this.w / 2, this.y + this.h / 2));
-  this.board.remove(this);
-  //loseGame();
+  //this.board.remove(this);
+  this.board.vida--;
+  this.board.time=0;
+  this.volverInicio();
+}
+Frog.prototype.volverInicio=function(){
+  this.x = Game.width / 2 - this.w / 2;
+  this.y = Game.height - this.h / 2;
+  this.frame = 0;
+  this.t=0;
+  this.mover = false;
+  this.subFrame = 0;
+}
+Frog.prototype.compruebaTiempo=function(){
+  if(this.board.time>=20){
+    this.hit();
+  }
 }
 //////////////////////////////////////////Car 
 /**
@@ -295,6 +312,7 @@ var Turtle = function (vel, fila) {
     frame: 0,
     vx: vel
   });
+  this.subFrame=0;
   this.zIndex=5;
   this.fila=fila;
   if (vel < 0) {
@@ -316,6 +334,18 @@ Turtle.prototype.step = function (dt) {
       collision.onTrunk(this.vx);
     }
   }
+  //animación
+  this.frame = Math.floor(this.subFrame++/ 60);
+  if (this.subFrame > 420 && this.subFrame<480) {
+    this.w=0;
+    this.h=0;
+  }else if(this.subFrame >= 480){
+    this.w=49;
+    this.h=45;
+    this.subFrame=0;
+    this.frame=0;
+  }
+  
 }
 
 var Spawner = function () {
@@ -326,7 +356,7 @@ var Spawner = function () {
     [1, 10, 'car', 3, 'coche', 50, 2],
     [4, 8, 'big_truck', 4, 'coche', -60, 0],
     [7, 3, 'turtle', 1, 'tortuga', 50, 0],
-    [1, 5, 'turtle', 4, 'tortuga', 50, 0],
+    [1, 3, 'turtle', 4, 'tortuga', 50, 0],
     [3, 10, 'tronco_grande', 2, 'tronco', 50, 0],
     [1, 3, 'tronco_peq', 3, 'tronco', 100, 0],
     [0, 4, 'tronco_peq', 5, 'tronco', 100, 0],
@@ -361,4 +391,41 @@ Spawner.prototype.step = function (dt) {
 }
 Spawner.prototype.draw = function () {
   
+}
+///Corazón
+var Heart = function () {
+  this.setup('corazon', {
+    frame: 3,
+  });
+  this.x = 20;
+  this.y = 15;
+  this.zIndex=13;
+}
+Heart.prototype = new Sprite();
+Heart.prototype.step = function (dt) {
+  this.frame = this.board.vida-1;
+  if (this.frame < 0) {
+    loseGame();
+  }
+}
+///Timer
+var Timer = function () {
+  this.time=0;
+  this.zIndex=14;
+}
+Timer.prototype = new Sprite();
+Timer.prototype.step = function (dt) {
+  this.board.time+=dt;
+  this.time=this.board.time;
+  if(this.time>20){
+    this.reset();
+  }
+}
+Timer.prototype.reset=function(){
+  this.time=0;
+}
+Timer.prototype.draw=function(){
+      Game.ctx.fillStyle = "#FFFFFF";
+      Game.ctx.font = "bold 40px";
+      Game.ctx.fillText(Math.trunc(this.time), 500, 40);
 }

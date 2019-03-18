@@ -8,19 +8,15 @@ var Game = new function() {
     this.height= this.canvas.height;
 
     this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
-    if(!this.ctx) { 
-      return alert("Please upgrade your browser to play"); }
+
+    if (!this.ctx) {
+      return alert("Please upgrade your browser to play");
+    }
 
     this.setupInput();
-
-    //this.loop(); 
-    //setInterval(this.loop, 1000/fps);
     requestAnimationFrame(Game.loop);
-
-
     SpriteSheet.load(sprite_data,callback);
   };
-
 
   // le asignamos un nombre lógico a cada tecla que nos interesa
   var KEY_CODES = { 37:'left', 39:'right', 38 :'up',40:'down',32:"fire" };
@@ -42,20 +38,14 @@ var Game = new function() {
       }
     },false);
   }
-
-
   var boards = [];
-
-  //var fps = 45;
   var toSkip = 0;
   var skip = toSkip;
   var oldtimestamp = 0;
-  this.loop = function(timestamp) { 
-    //var dt = analytics.getDT();
-    if(skip>0){
+  this.loop = function (timestamp) {
+    if (skip > 0) {
       --skip;
-    }
-    else{
+    } else {
 
       skip = toSkip;
 
@@ -64,7 +54,7 @@ var Game = new function() {
 
       // Cada pasada borramos el canvas
       Game.ctx.fillStyle = "#000";
-      Game.ctx.fillRect(0,0,Game.width,Game.height);
+      Game.ctx.fillRect(0, 0, Game.width, Game.height);
 
       // y actualizamos y dibujamos todas las entidades
       for (var i = 0, len = boards.length; i < len; i++) {
@@ -73,42 +63,34 @@ var Game = new function() {
           boards[i].draw(Game.ctx);
         }
       }
-      }
+    }
     requestAnimationFrame(Game.loop);
-
-    //setTimeout(Game.loop,0);
-
-    //var dtstep = analytics.getDT()*1000;
-    //console.log(dtstep);
-    //setTimeout(Game.loop, 1000/fps - dtstep);
   };
-
-  
   // Change an active game board
   this.setBoard = function (num, board) {
     boards[num] = board;
   };
 };
-///////// SPRITESHEET
+  ///////// SPRITESHEET
 
-var SpriteSheet = new function() {
-  this.map = { }; 
-  this.load = function(spriteData, callback) { 
-    this.map = spriteData;
-    this.image = new Image();
-    this.image.onload = callback;
-    this.image.src = 'images/sprites.png';
-  };
-  this.draw = function(ctx,sprite,x,y,frame) {
-    var s = this.map[sprite];
-    if(!frame) frame = 0;
-    ctx.drawImage(this.image,
-                     s.sx + frame * s.w, 
-                     s.sy, 
-                     s.w, s.h, 
-                     x,   y, 
-                     s.w, s.h);
-  };
+  var SpriteSheet = new function () {
+      this.map = {};
+      this.load = function (spriteData, callback) {
+        this.map = spriteData;
+        this.image = new Image();
+        this.image.onload = callback;
+        this.image.src = 'images/sprites.png';
+      };
+      this.draw = function (ctx, sprite, x, y, frame) {
+        var s = this.map[sprite];
+        if (!frame) frame = 0;
+        ctx.drawImage(this.image,
+          s.sx + frame * s.w,
+          s.sy,
+          s.w, s.h,
+          x, y,
+          s.w, s.h);
+      };
 }
 
 
@@ -149,12 +131,25 @@ var TitleScreen = function TitleScreen(subtitle,callback) {
 
 
 var GameBoard = function(ctx) {
+
   var board = this;
   this.activate=true;
+  this.vida=3;
+  this.time=0;
+
   // The current list of objects
   this.objects = [];
   this.cnt = {};
- 
+
+  this.init=function(){
+    board.add( new fondo());
+    board.add(new Frog());
+    board.add(new Spawner());
+    board.add(new Meta());
+    board.add(new Water());
+    board.add(new Heart());
+    board.add(new Timer());
+  }
   // Add a new object to the object list
   this.add = function(obj) { 
     obj.board=this; 
@@ -193,7 +188,7 @@ var GameBoard = function(ctx) {
       return 1;
     return 0;
   }
-  // Sort the list
+  // Sort the list of objects by zIndex
   this.sort = function () {
     this.objects.sort(this.compare);
     console.log(this.objects);
@@ -215,7 +210,6 @@ var GameBoard = function(ctx) {
     }
     return false;
   };
-
 
   // Call step on all objects and them delete
   // any object that have been marked for removal
@@ -239,9 +233,6 @@ var GameBoard = function(ctx) {
   this.collide = function(obj,type) {
     return this.detect(function() {
       if(obj != this) {
-      /*console.log(type +" ---" + this.type);
-      console.log(obj);
-      console.log(this);*/
        var col = (!type || this.type & type) && board.overlap(obj,this);
        return col ? this : false;
       }
