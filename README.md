@@ -10,8 +10,7 @@ The objective of the game is to guide a frog to the "frog home" at the top of th
 
 ------> Tiempo
 
-Además de todas las comentadas en el
-##### DESARROLLO DE LA PRÁCTICA:
+##### Además de todas las comentadas en el "DESARROLLO DE LA PRÁCTICA":
 ------>3.1 Escenario de fondo
 
 ------>3.2 Movimiento de la rana
