@@ -1,7 +1,7 @@
 var sprites = {
   escenario:{sx:422,sy:0,w:550,h:625,frame:1},
   agua:{sx:422,sy:49,w:550,h:240,frame:1},
-  meta:{sx:422,sy:49,w:550,h:48,frame:1},
+  meta:{sx:422,sy:49,w:550,h:46,frame:1},
   froggerLogo:{sx:0,sy:392,w:272,h:167,frame:1},
   car:{sx:4,sy:5,w:97,h:46,frame:3},
   small_truck:{sx:0,sy:60,w:138,h:44,frame:1},
