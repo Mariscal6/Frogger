@@ -1,6 +1,16 @@
 # Frogger
 The objective of the game is to guide a frog to the "frog home" at the top of the screen. You have three lifes to achive the objetive.
-Están hechas todas las comentadas en el desarrollo de la práctica:
+## OPCIONALES
+
+------>Animación de la rana
+
+------>Animación de la tortuga
+
+------> Vidas
+
+------> Tiempo
+
+Además de todas las comentadas en el desarrollo de la práctica:
 
 ------>3.1 Escenario de fondo
 
@@ -21,12 +31,3 @@ Están hechas todas las comentadas en el desarrollo de la práctica:
 ------>3.9 Menús y condiciones de finalización
 
 ------>3.10 Generadores de coches y troncos
-# OPCIONALES
-
------->Animación de la rana
-
------->Animación de la tortuga
-
-------> Vidas
-
-------> Tiempo
