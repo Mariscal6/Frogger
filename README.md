@@ -1,6 +1,6 @@
 # Frogger
 The objective of the game is to guide a frog to the "frog home" at the top of the screen. You have three lifes to achive the objetive.
-## OPCIONALES
+#### OPCIONALES
 
 ------>Animación de la rana
 
