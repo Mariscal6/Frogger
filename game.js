@@ -1,6 +1,6 @@
 // Especifica lo que se debe pintar al cargar el juego
 var startGame = function() {
-  Game.setBoard(0,new TitleScreen("Press space to start playing",
+  Game.setBoard(0,new TitleScreen("Welcome to Frogger","Press space to start de game",
                                   playGame));
 }
 
@@ -11,14 +11,14 @@ var playGame = function() {
 }
 
 var winGame = function() {
-  Game.setBoard(1,new TitleScreen("You win!", 
+  Game.setBoard(1,new TitleScreen("You win!", "Press space to restart",
                           playGame));
 };
 
 
 
 var loseGame = function () {
-  Game.setBoard(3, new TitleScreen("You lose!",
+  Game.setBoard(3, new TitleScreen("You lose!","Press space to restart de game",
     playGame));
 };
 

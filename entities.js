@@ -8,9 +8,9 @@ var sprites = {
   big_truck:{sx:145,sy:57,w:179,h:46,frame:1},
   tronco_med:{sx:4,sy:120,w:199,h:46,frame:1},
   tronco_grande:{sx:9,sy:172,w:247,h:46,frame:1},
-  tronco_peq:{sx:269,sy:168,w:138,h:46,frame:1},
+  tronco_peq:{sx:269,sy:168,w:138,h:45,frame:1},
   skull:{sx:211,sy:123,w:47,h:44,frame:4},
-  turtle:{sx:0,sy:289,w:49,h:48,frame:8},
+  turtle:{sx:0,sy:289,w:49,h:45,frame:8},
   frog:{sx:0,sy:341,w:38.85,h:46,frame:9},
   corazon:{sx:0,sy:571,w:43.6,h:42,frame:3}
 };
@@ -140,19 +140,21 @@ Death.prototype.step = function(dt) {
 var Frog = function () {
   this.setup('frog', {
     frame: 0,
-    vx: 0
   });
   this.zIndex=15;
   this.x = Game.width / 2 - this.w / 2;
-  this.y = Game.height - this.h / 2;
+  this.y = Game.height - this.h;
   this.subFrame = 0;
   this.mover = false;
+  this.vx=0;
 };
 Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
 
 Frog.prototype.step = function (dt) {
-  this.x += (this.vx * dt); 
+  this.x += (this.vx * dt);
+  console.log(this.y);
+  this.vx = 0; 
   if (this.mover) {
     this.animacion();
   } else {
@@ -165,23 +167,30 @@ Frog.prototype.step = function (dt) {
     } else if (Game.keys['down']) {
       this.moverRanaAbajo();
     }
-    if (this.x < 0) {
-      this.x = 0;
-    } else if (this.x > Game.width - this.w) {
-      this.x = Game.width - this.w;
-    }
-    if (this.y - this.h < 0) {
-      this.y = 0;
-    } else if (this.y > Game.height - this.h) {
-      this.y = Game.height - this.h;
-    }
+    this.combruebaTam();
     Game.keys = {};
   }
-  this.vx = 0;
+  
   this.compruebaTiempo();
+}
+Frog.prototype.combruebaTam = function (vt) {
+  if (this.x < 0) {
+    this.x = 0;
+  } else if (this.x > Game.width - this.w) {
+    this.x = Game.width - this.w;
+  }
+  if (this.y - this.h < 0) {
+    this.y = 0;
+  } else if (this.y > Game.height - this.h) {
+    this.y = Game.height - this.h;
+  }
 }
 Frog.prototype.onTrunk = function (vt) {
   this.vx = vt;
+  if(vx=0){
+    //console.log("-----------");
+  }
+  //console.log(this.vx);
 }
 Frog.prototype.moving = function () {
   if (this.vx != 0) {
@@ -190,16 +199,16 @@ Frog.prototype.moving = function () {
   return false;
 }
 Frog.prototype.animacion = function () {
-    if (this.frame != Math.floor(this.subFrame / 5)) {
-      this.y -= 48 / 7;
-    }
-    this.frame = Math.floor(this.subFrame++/ 5);
-    if (this.subFrame > 35) {
-      this.y = Math.floor(this.y);
-      this.frame = 0;
-      this.mover = false;
-      this.subFrame = 0;
-    }
+  if (this.frame != Math.floor(this.subFrame / 5)) {
+    this.y -= 48 / 7;
+  }
+  this.frame = Math.floor(this.subFrame++/ 5);
+  if (this.subFrame > 35) {
+    this.y = Math.floor(this.y);
+    this.frame = 0;
+    this.mover = false;
+    this.subFrame = 0;
+  }
 }
 Frog.prototype.moverRanaArriba = function () {
   this.y -= 48;
@@ -216,14 +225,14 @@ Frog.prototype.hit = function () {
 }
 Frog.prototype.volverInicio=function(){
   this.x = Game.width / 2 - this.w / 2;
-  this.y = Game.height - this.h / 2;
+  this.y = Game.height - this.h;
   this.frame = 0;
   this.t=0;
   this.mover = false;
   this.subFrame = 0;
 }
 Frog.prototype.compruebaTiempo=function(){
-  if(this.board.time>=20){
+  if(this.board.time>=30){
     this.hit();
   }
 }
@@ -336,16 +345,19 @@ Turtle.prototype.step = function (dt) {
   }
   //animación
   this.frame = Math.floor(this.subFrame++/ 60);
-  if (this.subFrame > 420 && this.subFrame<480) {
-    this.w=0;
-    this.h=0;
-  }else if(this.subFrame >= 480){
-    this.w=49;
-    this.h=45;
-    this.subFrame=0;
-    this.frame=0;
+  if (this.subFrame > 300 && this.subFrame < 360) {
+    this.w = 33;
+  } else if (this.subFrame > 360 && this.subFrame < 420) {
+    this.w = 23;
+  } else if (this.subFrame > 420 && this.subFrame < 480) {
+    this.w = 0;
+    this.h = 0;
+  } else if (this.subFrame >= 480) {
+    this.w = 49;
+    this.h = 45;
+    this.subFrame = 0;
+    this.frame = 0;
   }
-  
 }
 
 var Spawner = function () {
@@ -355,9 +367,9 @@ var Spawner = function () {
     [1, 6, 'small_truck', 2, 'coche', 70, 0],
     [1, 10, 'car', 3, 'coche', 50, 2],
     [4, 8, 'big_truck', 4, 'coche', -60, 0],
-    [7, 3, 'turtle', 1, 'tortuga', 50, 0],
+    [0, 7, 'turtle', 1, 'tortuga', 30, 0],
     [1, 3, 'turtle', 4, 'tortuga', 50, 0],
-    [3, 10, 'tronco_grande', 2, 'tronco', 50, 0],
+    [0, 10, 'tronco_grande', 2, 'tronco', -70, 0],
     [1, 3, 'tronco_peq', 3, 'tronco', 100, 0],
     [0, 4, 'tronco_peq', 5, 'tronco', 100, 0],
   ];
@@ -417,7 +429,7 @@ Timer.prototype = new Sprite();
 Timer.prototype.step = function (dt) {
   this.board.time+=dt;
   this.time=this.board.time;
-  if(this.time>20){
+  if(this.time>30){
     this.reset();
   }
 }
@@ -426,6 +438,6 @@ Timer.prototype.reset=function(){
 }
 Timer.prototype.draw=function(){
       Game.ctx.fillStyle = "#FFFFFF";
-      Game.ctx.font = "bold 40px";
-      Game.ctx.fillText(Math.trunc(this.time), 500, 40);
+      Game.ctx.font = "bold 40px arial";
+      Game.ctx.fillText(30-Math.trunc(this.time), 500, 40);
 }

@@ -98,9 +98,11 @@ var Game = new function() {
 
 //// TITLE
 
-var TitleScreen = function TitleScreen(subtitle,callback) {
+var TitleScreen = function TitleScreen(title,subtitle,callback) {
   var up = false;
   this.activate=true;
+  this.title=title;
+  this.subtitle=subtitle;
   this.step = function(dt) {
     if( ! Game.keys['fire'] ) up = true;
     if( up && Game.keys['fire'] && callback ) {
@@ -120,7 +122,11 @@ var TitleScreen = function TitleScreen(subtitle,callback) {
     ctx.fillStyle="#000000";
     ctx.font = "bold 30px arial";
     ctx.textAlign = "center";
-    ctx.fillText(subtitle, Game.width / 2, Game.height / 2 + 140);
+    ctx.fillText(this.title, Game.width / 2, Game.height / 2 + 140);
+    ctx.fillStyle="#000000";
+    ctx.font = "15px Georgia";
+    ctx.textAlign = "center";
+    ctx.fillText(this.subtitle, Game.width / 2, Game.height / 2 +200);
   };
 };
 
@@ -191,7 +197,7 @@ var GameBoard = function(ctx) {
   // Sort the list of objects by zIndex
   this.sort = function () {
     this.objects.sort(this.compare);
-    console.log(this.objects);
+    //console.log(this.objects);
   }
   // Call the same method on all current objects 
   this.iterate = function(funcName) {
